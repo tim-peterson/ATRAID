@@ -9,4 +9,4 @@ Statistical analysis for Figure 2 and Supplemental Figure 2 can be found at:
 
 ## Figure 4
 
-Venn Diagram for figure 4 was performed by establishing the intersection of the AFF, ONJ, DTC, and CRISPRi. See [figure4.sql](#figure4.sql) file for the query logic.
+Venn Diagram for figure 4 was performed by establishing the intersection of the AFF, ONJ, DTC, and CRISPRi. See the [figure4.sql](figure4.sql) file.
