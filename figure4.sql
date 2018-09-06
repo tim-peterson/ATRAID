@@ -1,4 +1,41 @@
 
+/* select all 6166 statistically significant differentially expressed genes in ONJ patients */
+select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol
+
+/* select all 1992 FDR-adjusted statistically significant differentially expressed genes in ONJ patients */
+select * from tbone.cheng_onj o where o.symbol !='.' and o.`adj.P.Val` <= 0.05 group by o.symbol;
+
+/* select all 1855 statistically significant differentially expressed genes in DTC patients */
+select * from tbone.cheng_cancer_her2_1000vs2500days_copy c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol;
+
+/* select all 774 statistically significant differentially expressed genes in both ONJ and DTC patients */
+select * from 
+(select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
+join
+(select  c.symbol as gene, c.logFC as c_fold, c.`AveExpr` as c_avg, c.`P.Value` as c_pval from tbone.cheng_cancer_her2_1000vs2500days c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol) c
+on o.gene=c.gene
+group by o.gene
+
+/* select all 3330 genes from ALN CRISPRi screen with absolute value rho phenotype > 0.1  */
+select gene, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho 
+from crispri.`aln` a
+where abs(a.`r avg3 average phenotype of strongest 3`) > 0.1 and `r avg3 Mann-Whitney p-value` !="" and gene not like "%pseudo_%"
+
+/* select all 2402 genes from ALN CRISPRi screen with absolute value rho phenotype > 0.1  */
+select gene, z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho 
+from crispri.`zol_digested_copy` z
+where abs(z.`r avg3 average phenotype of strongest 3`) > 0.1 and `r avg3 Mann-Whitney p-value` !="" and gene not like "%pseudo_%"
+
+/* select all 1596 genes from ALN or ZOL CRISPRi screen with absolute value rho phenotype > 0.15  */
+select a.gene, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho,
+z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho  
+from crispri.`aln` a
+join 
+crispri.`zol_digested_copy` z
+on a.gene=z.gene
+where 
+(abs(a.`r avg3 average phenotype of strongest 3`) > 0.15 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.15) and a.`r avg3 Mann-Whitney p-value` !="" and a.gene not like "%pseudo_%" and z.`r avg3 Mann-Whitney p-value` !="" and z.gene not like "%pseudo_%"
+
 /* 65 genes AFF + CRISPRi */
 select * from (select o.gene, crispri_aln_pval, crispri_aln_rho, crispri_zol_pval, crispri_zol_rho
  from aff_multiple_case_only_variants_v5 o
