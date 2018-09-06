@@ -36,6 +36,78 @@ on a.gene=z.gene
 where 
 (abs(a.`r avg3 average phenotype of strongest 3`) > 0.15 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.15) and a.`r avg3 Mann-Whitney p-value` !="" and a.gene not like "%pseudo_%" and z.`r avg3 Mann-Whitney p-value` !="" and z.gene not like "%pseudo_%"
 
+
+/* 90 genes CRISPRi-ONJ/DTC gene expression intersection */
+select * from (select o.* from 
+(select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
+join
+(select  c.symbol as gene, c.logFC as c_fold, c.`AveExpr` as c_avg, c.`P.Value` as c_pval from tbone.cheng_cancer_her2_1000vs2500days c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol) c
+on o.gene=c.gene
+group by o.gene) RNA
+join
+(select a.gene, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho,
+z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho  
+from crispri.`aln` a
+join 
+crispri.`zol_digested_copy` z
+on a.gene=z.gene
+where 
+(abs(a.`r avg3 average phenotype of strongest 3`) > 0.15 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.15) and a.`r avg3 Mann-Whitney p-value` !="" and a.gene not like "%pseudo_%" and z.`r avg3 Mann-Whitney p-value` !="" and z.gene not like "%pseudo_%") CRISPRI
+on RNA.gene=CRISPRI.gene
+group by RNA.gene
+
+
+/* 124 genes CRISPRi-AFF intersection */
+select * from (select * from aff_multiple_case_only_variants_v5) AFF
+join
+(select a.gene, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho,
+z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho  
+from crispri.`aln` a
+join 
+crispri.`zol_digested_copy` z
+on a.gene=z.gene
+where 
+(abs(a.`r avg3 average phenotype of strongest 3`) > 0.15 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.15) and a.`r avg3 Mann-Whitney p-value` !="" and a.gene not like "%pseudo_%" and z.`r avg3 Mann-Whitney p-value` !="" and z.gene not like "%pseudo_%") CRISPRI
+on CRISPRI.gene like concat( '%', AFF.gene, '%')
+group by AFF.gene
+
+
+/* 126 genes ONJ/DTC gene expression-AFF intersection */
+select * from (select * from aff_multiple_case_only_variants_v5) AFF
+join 
+(select o.* from 
+(select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
+join
+(select  c.symbol as gene, c.logFC as c_fold, c.`AveExpr` as c_avg, c.`P.Value` as c_pval from tbone.cheng_cancer_her2_1000vs2500days c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol) c
+on o.gene=c.gene
+group by o.gene) RNA
+on RNA.gene like concat( '%', AFF.gene, '%')
+group by RNA.gene
+
+
+/* 8 genes ONJ/DTC gene expression-AFF-CRISPRi intersection */
+select * from (select o.* from 
+(select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
+join
+(select  c.symbol as gene, c.logFC as c_fold, c.`AveExpr` as c_avg, c.`P.Value` as c_pval from tbone.cheng_cancer_her2_1000vs2500days c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol) c
+on o.gene=c.gene
+group by o.gene) RNA
+join
+(select a.gene, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho,
+z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho  
+from crispri.`aln` a
+join 
+crispri.`zol_digested_copy` z
+on a.gene=z.gene
+where 
+(abs(a.`r avg3 average phenotype of strongest 3`) > 0.15 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.15) and a.`r avg3 Mann-Whitney p-value` !="" and a.gene not like "%pseudo_%" and z.`r avg3 Mann-Whitney p-value` !="" and z.gene not like "%pseudo_%") CRISPRI
+on RNA.gene=CRISPRI.gene
+join
+(select * from aff_multiple_case_only_variants_v5) AFF
+on RNA.gene like concat( '%', AFF.gene, '%')
+group by RNA.gene
+
+
 /* 65 genes AFF + CRISPRi */
 select * from (select o.gene, crispri_aln_pval, crispri_aln_rho, crispri_zol_pval, crispri_zol_rho
  from aff_multiple_case_only_variants_v5 o
