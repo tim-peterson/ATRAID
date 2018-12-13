@@ -10,12 +10,12 @@ where
 (abs(a.`r avg3 average phenotype of strongest 3`) > 0.1 or abs(z.`r avg3 average phenotype of strongest 3`) > 0.1) and (a.`r avg3 Mann-Whitney p-value` <= 0.05 or z.`r avg3 Mann-Whitney p-value` <= 0.05) and a.gene not like "%pseudo_%" and z.gene not like "%pseudo_%"
 
 /* select all 774 statistically significant differentially expressed genes in both ONJ and DTC patients */
-select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
+select * from (select o.symbol as gene, o.logFC as o_fold, o.`AveExpr` as o_avg, o.`P.Value` as o_pval from tbone.cheng_onj o where o.symbol !='.' and o.`P.Value` <= 0.05 group by symbol) o
 join
 (select  c.symbol as gene, c.logFC as c_fold, c.`AveExpr` as c_avg, c.`P.Value` as c_pval from tbone.cheng_cancer_her2_1000vs2500days c where c.symbol !='.' and c.`P.Value` <= 0.05 group by symbol) c
 on o.gene=c.gene
 group by o.gene
- 
+
 
 /* 165 genes CRISPRi-AFF intersection */
 select * from (select * from aff_multiple_case_only_variants_v5) AFF
