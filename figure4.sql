@@ -113,7 +113,7 @@ group by o.gene
 join
 (select a.gene as crispri_gene, (abs(a.`r avg3 average phenotype of strongest 3`) + abs(z.`r avg3 average phenotype of strongest 3`) + abs(a2.`r avg3 average phenotype of strongest 3`) + abs(z2.`r avg3 average phenotype of strongest 3`)) sumall, a.`r avg3 Mann-Whitney p-value` as crispri_aln_pval, a.`r avg3 average phenotype of strongest 3` as crispri_aln_rho,
 z.`r avg3 Mann-Whitney p-value` as crispri_zol_pval, z.`r avg3 average phenotype of strongest 3` as crispri_zol_rho,
-a2.`r avg3 average phenotype of strongest 3` crispra_rho, z2.`r avg3 average phenotype of strongest 3` z2_rho
+a2.`r avg3 average phenotype of strongest 3` crispra_rho, a2.`r avg3 Mann-Whitney p-value` crispra_pval, z2.`r avg3 average phenotype of strongest 3` z2_rho, z2.`r avg3 Mann-Whitney p-value` as z2_pval
 from crispri.`aln` a
 join 
 crispri.`zol_digested_copy` z
